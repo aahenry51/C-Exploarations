@@ -1,0 +1,301 @@
+// testing.cpp :  This file is designed to file simple patterns in array
+//
+
+#include <iostream>
+#include <vector>
+#include <list>
+
+using namespace std;
+
+/// <summary>
+/// Class of Matching Positions Found 
+/// </summary>
+class FoundPositions {
+public:
+     int rows;
+     int columns;
+
+     FoundPositions(int Row, int Col) {
+         rows = Row;
+         columns = Col;
+     }
+
+};
+
+/// <summary>
+/// A Class Focusing on Array 
+/// </summary>
+class ArraySet {
+
+public:
+  
+    vector<int> FindPosition( int Row, int Column, int Row_Magnitude, int Coln_Magnitude)
+    {
+        vector<int> pos = { -1, -1 };
+        
+        //int Maxrows = sizeof Elements / sizeof Elements[0]; // 2 rows  
+
+        //int Maxcols = sizeof Elements[0] / sizeof(int); // 5 cols
+
+        pos = { Row + Row_Magnitude, Column + Coln_Magnitude };
+        return pos;
+
+    }
+
+    /// <summary>
+    /// Check if its inside bounds
+    /// </summary>
+    /// <param name="Elements"></param>
+    /// <param name="Row"></param>
+    /// <param name="Column"></param>
+    /// <returns></returns>
+    template <size_t r, size_t c>
+    bool PositionExist(int(&Elements)[r][c], int Row, int Column) {
+        int Maxrows = sizeof Elements / sizeof Elements[0]; // 2 rows  
+
+        int Maxcols = sizeof Elements[0] / sizeof(int); // 5 cols
+
+        if (Row >= 0 && Row  < Maxrows) {
+
+            if (Column >= 0 && Column < Maxcols) {
+
+     
+                return true;
+
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Check if its inside bounds
+    /// </summary>
+    /// <param name="Elements"></param>
+    /// <param name="Row"></param>
+    /// <param name="Column"></param>
+    /// <returns></returns>
+    template <size_t r>
+    bool PositionExist(int(&Elements)[r], int Row, int Column) {
+        int MaxColumn = sizeof Elements / sizeof Elements[0]; //
+ 
+        //cout << "Maxrows: " << Maxrows << '\t';
+        if (Row == 0) {
+            if (Column >= 0 && Column < MaxColumn) {
+
+                return true;
+
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+};
+
+
+class FindPattern2D : ArraySet {
+
+private:
+
+    int Rows = 0;
+    int Columns;
+    int ElementArray[100][100];
+
+public:
+
+
+    /// <summary>
+    /// Set the Array to Find Pattern in.
+    /// </summary>
+    /// <param name="Elements"></param>
+    template <size_t r, size_t c>
+    FindPattern2D(int(&Elements)[r][c])
+    {
+        Rows = r;
+        Columns = c;
+
+        for (size_t i = 0; i < Rows; ++i)
+        {
+            for (size_t j = 0; j < Columns; ++j)
+                ElementArray[i][j] = Elements[i][j];
+        
+        }
+
+       // FindPosition(Elements, 0, 2, 1, 1);
+    }
+
+    /// <summary>
+    /// Find Pattern Method overload
+    /// </summary>
+    /// <param name="Pattern"></param>
+    /// <param name="Origin"></param>
+    template <size_t r2, size_t c2>
+    void Find(int(&Pattern)[r2][c2], vector<int> Origin) {
+
+        cout << '\n' << "Pattern Origin: " << " { " << Origin[0] << " , " << Origin[1] << " } " << '\n';
+
+        cout << '\n' << "Pattern: " << '\n';
+        cout << " { ";
+
+        for (size_t i = 0; i < r2; ++i)
+        {
+            cout << '\n';
+            for (size_t j = 0; j < c2; ++j)
+            {
+
+                cout << "  " << Pattern[i][j]<< "  ";
+            }
+        }
+ 
+        cout << " } ";
+
+        //Check is Origin in Grid Exist
+        if (!PositionExist(Pattern, Origin[0], Origin[1])) {
+            cout << '\n' << '\n' << "Origin NonExistant" << '\n';
+        }
+        else {
+
+            list<FoundPositions> pos;
+
+            //Display Elements and Find Matches 
+            cout << '\n' << '\n' << "Elements: " << '\n';
+            cout << " { ";
+            for (size_t i = 0; i < Rows; ++i)
+            {
+                cout << '\n';
+                for (size_t j = 0; j < Columns; ++j)
+                {
+                    cout << '\t' << ElementArray[i][j] << " ";
+
+                    //Compare Position with Pattern
+                    bool PatternFound = true;
+                 
+
+                    for (int i2 = 0; i2 < r2; ++i2)
+                    {
+                      
+                        for (int j2 = 0; j2 < c2; ++j2)
+                        {
+
+                            // 0 because of 1d array
+                            if (PositionExist(ElementArray, i - Origin[0]+i2, j - Origin[1]+j2 )) {
+
+                                if (ElementArray[i - Origin[0] + i2][j - Origin[1] + j2] == Pattern[i2][j2]) {
+                                }
+                                else { PatternFound = false; break; }
+                            }
+                            else { PatternFound = false; break; }
+                         
+                        }
+                    }
+                
+                    if (PatternFound)
+                    {
+                        // string poss = (i + " , " + j;
+                        pos.push_back(FoundPositions(i, j));
+                    }
+                }
+            }
+            cout << '\n' << " } ";
+
+            cout << '\n' << "Pattern At Position: ";
+            for (const auto& p : pos)
+            {
+                cout << '\n' << "( " << p.rows << " , " << p.columns << " )";
+            }
+            cout << '\n' << "----------------------------------------------------" << '\n';
+        }
+    }
+
+    template <size_t r3>
+    void Find(int(&Pattern)[r3], vector<int> Origin) {
+            
+        
+        cout << '\n' << "Pattern Origin: " << " { " << Origin[0] << " , " << Origin[1] << " } " << '\n';
+
+        cout << '\n' << "Pattern: " << '\n';
+        cout << " { ";
+        for (const auto& num : Pattern)
+        {
+            cout << "  " << num << "  ";
+        }
+        cout << " } ";
+
+        //Check is Origin in Grid Exist
+        if (!PositionExist(Pattern, Origin[0], Origin[1])) {
+            cout << '\n'<< '\n' << "Origin NonExistant" << '\n';
+        }
+        else {
+
+            list<FoundPositions> pos;
+
+            //Display Elements and Find Matches 
+            cout << '\n' << '\n' << "Elements: " << '\n';
+            cout << " { ";
+            for (size_t i = 0; i < Rows; ++i)
+            {
+                cout << '\n';
+                for (size_t j = 0; j < Columns; ++j)
+                {
+                    cout << '\t' << ElementArray[i][j] << " ";
+
+                    //Compare Position with Pattern
+                    bool PatternFound = true;
+                    int count = 0;
+                    for (const auto& num : Pattern)
+                    {
+                        // 0 because of 1d array
+                        if (PositionExist(ElementArray, i, j- Origin[1] +count) ) {
+
+                            if (ElementArray[i][j - Origin[1] + count] == num ) {
+                            }
+                            else { PatternFound = false; break; }
+                        }
+                        else{ PatternFound = false; break; }
+                        ++count;
+                      
+                    }
+
+                    if (PatternFound) 
+                    { 
+                       // string poss = (i + " , " + j;
+                       pos.push_back(FoundPositions(i,j));
+                    }
+                }
+            }
+            cout << '\n' << " } ";
+
+            cout << '\n' << "Pattern At Position: ";
+            for (const auto& p : pos)
+            {
+                cout << '\n' <<"( " << p.rows << " , " << p.columns<< " )";
+            }
+            cout << '\n' << "----------------------------------------------------" << '\n';
+        }
+    }
+
+
+   
+};
+
+int main()
+{
+    int arraypattern[2] = { 1,1 };
+    int arraypattern2[2][2] = { { 1,1 } , { 1,1 } };
+
+    int array[2][4] = { {1,2,1, 1},{3,1,1, 1} };
+    FindPattern2D pat(array);
+    pat.Find(arraypattern, { 0, 0 });
+    pat.Find(arraypattern, { 0, 1 });
+
+    pat.Find(arraypattern2, { 0, 1 });
+  
+}
